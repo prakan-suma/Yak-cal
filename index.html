@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมคำนวณราคาน้ำยาง</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 30px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        h2 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>โปรแกรมคำนวณราคาน้ำยาง</h2>
+
+    <label for="weight">น้ำหนักยาง (กก.):</label>
+    <input type="number" id="weight" placeholder="กรอกน้ำหนักยาง" required>
+
+    <label for="bucketWeight">น้ำหนักถัง (กก.):</label>
+    <input type="number" id="bucketWeight" placeholder="กรอกน้ำหนักถัง" required>
+
+    <label for="dryPercentage">เปอร์เซ็นต์น้ำยางแห้ง (%):</label>
+    <input type="number" id="dryPercentage" placeholder="กรอกเปอร์เซ็นต์น้ำยางแห้ง" required>
+
+    <label for="rubberPrice">ราคารับซื้อ (บาท/กก.):</label>
+    <select id="rubberPrice">
+        <option value="0">เลือกราคา...</option>
+        <!-- ราคาตั้งแต่ 0 - 100 บาท -->
+        <script>
+            for (let i = 0; i <= 100; i++) {
+                document.write(`<option value="${i}">${i} บาท</option>`);
+            }
+        </script>
+    </select>
+
+    <button onclick="calculatePrice()">คำนวณราคา</button>
+
+    <div class="result" id="result"></div>
+
+    <script>
+        // เก็บค่าเลือกสุดท้ายไว้ใน Local Storage
+        const rubberPriceSelect = document.getElementById('rubberPrice');
+        const savedPrice = localStorage.getItem('selectedRubberPrice');
+        if (savedPrice) {
+            rubberPriceSelect.value = savedPrice;
+        }
+        rubberPriceSelect.addEventListener('change', function () {
+            localStorage.setItem('selectedRubberPrice', this.value);
+        });
+
+        function calculatePrice() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const bucketWeight = parseFloat(document.getElementById('bucketWeight').value);
+            const dryPercentage = parseFloat(document.getElementById('dryPercentage').value);
+            const rubberPrice = parseFloat(rubberPriceSelect.value);
+
+            // ตรวจสอบว่ากรอกข้อมูลครบถ้วนหรือไม่
+            if (isNaN(weight) || isNaN(bucketWeight) || isNaN(dryPercentage) || isNaN(rubberPrice) || rubberPrice === 0) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+                return;
+            }
+
+            // คำนวณน้ำหนักยางที่เหลือ
+            const netWeight = weight - bucketWeight;
+            
+            // คำนวณน้ำหนักยางแห้ง
+            const dryRubberWeight = netWeight * (dryPercentage / 100);
+            
+            // ตัดทศนิยมให้เหลือเพียงตำแหน่งเดียว
+            const roundedDryRubberWeight = Math.floor(dryRubberWeight * 10) / 10;
+            
+            // คำนวณราคารับซื้อ
+            const totalPrice = roundedDryRubberWeight * rubberPrice;
+
+            // แสดงผลลัพธ์
+            document.getElementById('result').innerHTML = `
+                <strong>ผลการคำนวณ:</strong><br>
+                น้ำหนักยางที่เหลือ: ${netWeight.toFixed(2)} กก.<br>
+                น้ำหนักยางแห้ง: ${roundedDryRubberWeight.toFixed(1)} กก.<br>
+                ราคารับซื้อ: ${rubberPrice} บาท/กก.<br>
+                <strong>ยอดเงินที่ต้องจ่าย: ${totalPrice.toFixed(2)} บาท</strong>
+            `;
+        }
+    </script>
+</body>
+</html>
