@@ -77,6 +77,8 @@
 
     <div class="result" id="result"></div>
 
+    <button onclick="printResult()">พิมพ์ผลลัพธ์</button>
+
     <script>
         // เก็บค่าเลือกสุดท้ายไว้ใน Local Storage
         const rubberPriceSelect = document.getElementById('rubberPrice');
@@ -120,6 +122,21 @@
                 ราคารับซื้อ: ${rubberPrice} บาท/กก.<br>
                 <strong>ยอดเงินที่ต้องจ่าย: ${totalPrice.toFixed(2)} บาท</strong>
             `;
+        }
+
+        // ฟังก์ชันสำหรับการพิมพ์ผลลัพธ์
+        function printResult() {
+            const resultContent = document.getElementById('result').innerHTML;
+            
+            // สร้างหน้าต่างใหม่เพื่อพิมพ์
+            const printWindow = window.open('', '', 'width=600,height=400');
+            printWindow.document.write('<html><head><title>ผลการคำนวณ</title></head><body>');
+            printWindow.document.write('<h2>ผลการคำนวณราคาน้ำยาง</h2>');
+            printWindow.document.write(resultContent);
+            printWindow.document.write('</body></html>');
+            
+            printWindow.document.close();
+            printWindow.print();  // เรียกใช้งานหน้าต่างการพิมพ์
         }
     </script>
 </body>
